@@ -25,7 +25,7 @@ public class RegisterPageTest extends BaseTest{
 		return new Object[][] {
 			{"gaurav", "sharma", "9878987678", "gaurav@123", "yes"},
 			{"anurag", "automation", "9878987687", "anurag@123", "no"},
-			{"priya", "automationn", "2378987678", "priya@123", "yes"},
+			{"priya", "automation", "2378987678", "priya@123", "yes"},
 		};
 	}
 	

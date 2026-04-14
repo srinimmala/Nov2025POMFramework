@@ -2,7 +2,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
 
 <suite name="Open Cart Test Regression Suite" verbose="3"
-	parallel="tests" thread-count="3">
+	parallel="tests" thread-count="4">
 
 
     <listeners>
@@ -21,13 +21,13 @@
 	</test>
 
 
-	<test name="Home Page Test">
-		<parameter name="browser" value="chrome" />
+	 <test name="Home Page Test">
+		<parameter name="browser" value="firefox" />
 
 		<classes>
 			<class name="com.opencart.qa.tests.HomePageTest" />
 		</classes>
-	</test>
+	</test> 
 
 
 	 <test name="Product Info Page Test">
@@ -40,7 +40,7 @@
 	
 	
 	<test name="Register Page Test">
-		<parameter name="browser" value="chrome" />
+		<parameter name="browser" value="firefox" />
 
 		<classes>
 			<class name="com.opencart.qa.tests.RegisterPageTest" />

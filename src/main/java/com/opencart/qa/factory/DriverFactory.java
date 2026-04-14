@@ -1,10 +1,11 @@
 package com.opencart.qa.factory;
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Properties;
 
 import org.openqa.selenium.OutputType;
@@ -13,6 +14,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
 import com.opencart.qa.exceptions.BrowserException;
@@ -38,7 +40,7 @@ public class DriverFactory {
 	public WebDriver initDriver(Properties prop) {
 
 		String browserName = prop.getProperty("browser");
-		//String browserName = System.getProperty("browser"); chrome
+		// String browserName = System.getProperty("browser");//chrome
 		System.out.println("browser name : " + browserName);
 
 		highlight = prop.getProperty("highlight");
@@ -46,20 +48,34 @@ public class DriverFactory {
 
 		switch (browserName.trim().toLowerCase()) {
 		case "chrome":
-			tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
-			// driver = new ChromeDriver(optionsManager.getChromeOptions());
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run tcs on grid:
+				initRemoteDriver(browserName);
+			} else {
+				// run tcs on local:
+				tlDriver.set(new ChromeDriver(optionsManager.getChromeOptions()));
+			}
 			break;
 		case "firefox":
-			tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
-			// driver = new FirefoxDriver(optionsManager.getFirefoxOptions());
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run tcs on grid:
+				initRemoteDriver(browserName);
+			} else {
+				// run tcs on local:
+				tlDriver.set(new FirefoxDriver(optionsManager.getFirefoxOptions()));
+			}
 			break;
 		case "edge":
-			tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
-			// driver = new EdgeDriver(optionsManager.getEdgeOptions());
+			if (Boolean.parseBoolean(prop.getProperty("remote"))) {
+				// run tcs on grid:
+				initRemoteDriver(browserName);
+			} else {
+				// run tcs on local:
+				tlDriver.set(new EdgeDriver(optionsManager.getEdgeOptions()));
+			}
 			break;
 		case "safari":
 			tlDriver.set(new SafariDriver());
-			// driver = new SafariDriver();
 			break;
 
 		default:
@@ -72,6 +88,36 @@ public class DriverFactory {
 		getDriver().get(prop.getProperty("url"));
 
 		return getDriver();
+
+	}
+
+	/**
+	 * this will setup the RWD with hub url and browser options. it will supply the test to the remote grid machine
+	 * @param browserName
+	 */
+	private void initRemoteDriver(String browserName) {
+		System.out.println("Running tcs on selenium grid...with browser: "+ browserName);
+		try {
+			switch (browserName.trim().toLowerCase()) {
+			case "chrome":
+				tlDriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getChromeOptions()));
+				break;
+			case "firefox":
+				tlDriver.set(
+						new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getFirefoxOptions()));
+				break;
+			case "edge":
+				tlDriver.set(new RemoteWebDriver(new URL(prop.getProperty("huburl")), optionsManager.getEdgeOptions()));
+				break;
+
+			default:
+				System.out.println("Plz supply the right browser name...." + browserName);
+				break;
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -91,21 +137,20 @@ public class DriverFactory {
 
 	// mvn test -Denv="qa"
 	// mvn clean install
-	//mvn package
-	//mvn deploy
+	// mvn package
+	// mvn deploy
 	public Properties initProp() {
 		FileInputStream ip = null;
 		prop = new Properties();
-		
-		String envName = System.getProperty("env");//qa
+
+		String envName = System.getProperty("env");// qa
 		System.out.println("Env Name is : " + envName);
 
 		try {
 			if (envName == null) {
 				System.out.println("env name is null, hence running test cases on QA environment...");
 				ip = new FileInputStream("./src/test/resources/config/config.qa.properties");
-			} 
-			else {
+			} else {
 				switch (envName.trim().toLowerCase()) {
 				case "qa":
 					ip = new FileInputStream("./src/test/resources/config/config.qa.properties");
@@ -130,7 +175,7 @@ public class DriverFactory {
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} 
+		}
 
 		try {
 			prop.load(ip);

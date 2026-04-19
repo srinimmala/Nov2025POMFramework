@@ -55,7 +55,7 @@ public class OptionsManager {
 			eo.addArguments("-inprivate");
 		}
 		if (Boolean.parseBoolean(prop.getProperty("remote"))) {
-			eo.setCapability("browserName", "MicrosoftEdge");
+			eo.setCapability("browserName", "edge");
 		}
 		return eo;
 	}

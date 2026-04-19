@@ -37,8 +37,8 @@ public class DriverFactory {
 	 * @param browserName
 	 * @return it returns the driver value
 	 */
-	public WebDriver initDriver(Properties prop) {
-
+	public WebDriver initDriver(Properties prop) {		
+		
 		String browserName = prop.getProperty("browser");
 		// String browserName = System.getProperty("browser");//chrome
 		System.out.println("browser name : " + browserName);
@@ -95,6 +95,7 @@ public class DriverFactory {
 	 * this will setup the RWD with hub url and browser options. it will supply the test to the remote grid machine
 	 * @param browserName
 	 */
+	@SuppressWarnings("deprecation")
 	private void initRemoteDriver(String browserName) {
 		System.out.println("Running tcs on selenium grid...with browser: "+ browserName);
 		try {
